@@ -32,6 +32,10 @@
             <audio id="audio2" controls> 
                 <source src="preview_headset/1.wav" type="audio/mpeg"> 
             </audio>
+
+            Waveform
+            <img id="waveform" src="pic/1.png" alt="Italian Trulli">
+
         </div>
 
             <br><br>
@@ -89,11 +93,14 @@
 
                 document.getElementById("audio2").setAttribute('src', "preview_headset/"+num+".wav");
                 
+                document.getElementById("waveform").setAttribute('src', "pic/"+num+".png");
+                
                 // Edit background colour
                 // document.getElementById("play").style.backgroundColor = "lightgray";
 
                 // Edit title
                 document.getElementById("header1").innerHTML = num;
+
 
             }
 
@@ -106,6 +113,7 @@
                 // Edit source file
                 document.getElementById("audio1").setAttribute('src', "preview_array/"+num+".wav");
                 document.getElementById("audio2").setAttribute('src', "preview_headset/"+num+".wav");
+                document.getElementById("waveform").setAttribute('src', "pic/"+num+".png");
                 
                 // document.getElementById("play").style.backgroundColor = "lightgray";
 
@@ -122,6 +130,8 @@
                 // Edit source file
                 document.getElementById("audio1").setAttribute('src', "preview_array/"+num+".wav");
                 document.getElementById("audio2").setAttribute('src', "preview_headset/"+num+".wav");
+                document.getElementById("waveform").setAttribute('src', "pic/"+num+".png");
+                
 
                 // Edit title
                 document.getElementById("header1").innerHTML = num;
