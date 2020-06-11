@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+    <TITLE> Audio annotation tool</TITLE>
+    <link rel="stylesheet" href="style.css">
+    
+    <style type="text/css">
+        
+        body {
+        font-family: 'Helvetica neue', Helvetica, Arial, sans-serif;
+        }
+        
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .portrait {
+            height: 80px;
+            width: 30px;
+        }
+
+        .landscape {
+            height: auto;
+            width: 500px;
+        }
+
+        .square {
+            height: 75px;
+            width: 75px;
+        }
+        
+        table, th, td {
+            border: 1px solid black;
+        }   
+
+    </style>
+    
+</HEAD>
+
+    <BODY>
+        
+       <!-- Example 1 --> 
+        <div id="titles">
+            <h1>AMI annotation tool</h1>
+            <p> 
+                This page was created to suppor the re-annotation work carried out on the AMI corpus <a href="https://ieeexplore.ieee.org/document/8904929">presented in this paper</a>
+                The <a href="http://groups.inf.ed.ac.uk/ami/corpus/">AMI corpus</a> contains a number of audio events labelled as "cough" by the annotation team, for example.
+            </p>
+            <audio id="audio_cough_example1" controls> 
+                <source src="preview_array/42.wav" type="audio/mpeg"> 
+            </audio>
+            <audio id="audio_cough_example2" controls> 
+                <source src="preview_array/53.wav" type="audio/mpeg"> 
+            </audio>
+            <p>
+                Although, a large portion of these events can clearly be considered coughs (aspiration before expiration), a more substantial number of these events are more inline with thoat clearing sounds.
+            </p>
+            <audio id="audio_noncoughexample1" controls> 
+                <source src="preview_array/15.wav" type="audio/mpeg">
+            </audio>
+            <audio id="audio_noncoughexample2" controls> 
+                <source src="preview_headset/13.wav" type="audio/mpeg"> 
+            </audio>
+            <p>
+                Using this webpage, audio files can be previewed from tabletop array recordings and headset recordings once.
+                1369 files are available for previewing and a specific file can be accessed using the "jump to" button below by entering a file number in the field.
+                Associated annotations (which can be found <a href="https://github.com/paulleamy/AMI-Cough-Annotations">here</a>) will also show when a file is selected.
+            </p>
+        </div>
+
+        <div class="landscape">
+            <H1 id="header1">1</H1>
+            <img id="waveform" src="pic/1.svg" alt="Italian Trulli">
+
+        </div>
+        
+        <br><br><br>
+
+        <div>    
+            Room
+            <audio id="audio1" controls> 
+                <source src="preview_array/1.wav" type="audio/mpeg"> 
+            </audio>
+
+            <br>
+
+            Head
+            <audio id="audio2" controls> 
+                <source src="preview_headset/1.wav" type="audio/mpeg"> 
+            </audio>
+        </div>
+
+       
+
+            <!-- <br><br> -->
+            
+            <button onclick="eventJump()" style="width:100px;height:60px;"> Jump to... </button>
+            <input type="text" id="myText" value="">
+            
+            <!-- <br><br> -->
+            
+            <button id="next" class="buttonsmall" onclick="prev()" type="button" style="width:100px;height:60px;">Prev</button>
+            <!-- <button id="play" class="buttonsmall" onclick="playAudio()" type="button">Play</button> -->
+            <button id="next" class="buttonsmall" onclick="next()" type="button" style="width:100px;height:60px;">Next</button>
+            
+
+        <script type="text/javascript">
+
+            function eventJump() {
+                var x = document.getElementById("myText").value;
+                document.getElementById("demo").innerHTML = x;
+            }
+
+            var player1 = document.getElementById('audio1');
+            player1.preload = "auto";
+            player1.volume = 1;
+            
+            var player2 = document.getElementById('audio2');
+            player2.preload = "auto";
+            player2.volume = 1;
+
+            var num = 1;
+            var srcfile;
+
+           
+            // function playAudio() {
+                
+                
+            //     player1.loop = false;
+            //     player1.play();
+                
+            //     player2.loop = false;
+            //     player2.play();
+            
+            //     document.getElementById("play").style.backgroundColor = "rgb(158, 182, 185)";
+
+            // }
+
+            function next() {
+                
+                // Increase num variable by 1
+                num++;
+
+                // Edit source file
+                document.getElementById("audio1").setAttribute('src', "preview_array/"+num+".wav");
+
+                document.getElementById("audio2").setAttribute('src', "preview_headset/"+num+".wav");
+                
+                document.getElementById("waveform").setAttribute('src', "pic/"+num+".svg");
+                
+                // Edit background colour
+                // document.getElementById("play").style.backgroundColor = "lightgray";
+
+                // Edit title
+                document.getElementById("header1").innerHTML = num;
+
+
+            }
+
+            function prev() {
+
+                // Increase num variable by 1
+                num--;
+                if (num < 1) {num = 1}
+
+                // Edit source file
+                document.getElementById("audio1").setAttribute('src', "preview_array/"+num+".wav");
+                document.getElementById("audio2").setAttribute('src', "preview_headset/"+num+".wav");
+                document.getElementById("waveform").setAttribute('src', "pic/"+num+".svg");
+                
+                // document.getElementById("play").style.backgroundColor = "lightgray";
+
+                // Edit title
+                document.getElementById("header1").innerHTML = num;
+
+            }
+
+            function eventJump() {
+                
+                var x = document.getElementById("myText").value;
+                num = x;
+
+                // Edit source file
+                document.getElementById("audio1").setAttribute('src', "preview_array/"+num+".wav");
+                document.getElementById("audio2").setAttribute('src', "preview_headset/"+num+".wav");
+                document.getElementById("waveform").setAttribute('src', "pic/"+num+".svg");
+                
+
+                // Edit title
+                document.getElementById("header1").innerHTML = num;
+            }
+
+            
+          
+          </script>
+
+    </BODY>
+
+</HTML>
