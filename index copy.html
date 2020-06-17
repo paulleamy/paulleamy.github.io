@@ -33,19 +33,34 @@
         
         table, th, td {
             border: 1px solid black;
+        }
+
+        thead, tbody { display: block; }
+
+        tbody {
+            height: 1000px;       /* Just for the demo          */
+            overflow-y: auto;    /* Trigger vertical scroll    */
+            overflow-x: hidden;  /* Hide the horizontal scroll */
+        }
+
+        tr{
+
         }   
+        .cough{}
+        .noncough{}
 
     </style>
     
 </HEAD>
 
-    <BODY>
+    <BODY onLoad="hideAll()">
         
        <!-- Example 1 --> 
         <div id="titles">
+
             <h1>AMI annotation tool</h1>
             <p> 
-                This page was created to suppor the re-annotation work carried out on the AMI corpus <a href="https://ieeexplore.ieee.org/document/8904929">presented in this paper</a>
+                This page was created to support the re-annotation work carried out on the AMI corpus <a href="https://ieeexplore.ieee.org/document/8904929">presented in this paper</a>
                 The <a href="http://groups.inf.ed.ac.uk/ami/corpus/">AMI corpus</a> contains a number of audio events labelled as "cough" by the annotation team, for example.
             </p>
             <audio id="audio_cough_example1" controls> 
@@ -55,7 +70,7 @@
                 <source src="preview_array/53.wav" type="audio/mpeg"> 
             </audio>
             <p>
-                Although, a large portion of these events can clearly be considered coughs (aspiration before expiration), a more substantial number of these events are more inline with thoat clearing sounds.
+                Although, a large portion of these events can clearly be considered coughs (aspiration before expiration), a more substantial number of these events are more inline with the sound thoat clearing, expirations, and heavy breathing.
             </p>
             <audio id="audio_noncoughexample1" controls> 
                 <source src="preview_array/15.wav" type="audio/mpeg">
@@ -64,21 +79,25 @@
                 <source src="preview_headset/13.wav" type="audio/mpeg"> 
             </audio>
             <p>
-                Using this webpage, audio files can be previewed from tabletop array recordings and headset recordings once.
+                Using this webpage, audio files from array and headset recordings can be previewed along side the corresponding waveform and magnitude spectrogram. 
                 1369 files are available for previewing and a specific file can be accessed using the "jump to" button below by entering a file number in the field.
                 Associated annotations (which can be found <a href="https://github.com/paulleamy/AMI-Cough-Annotations">here</a>) will also show when a file is selected.
             </p>
         </div>
 
+        
         <div class="landscape">
-            <H1 id="header1">1</H1>
+            <H1 id="header1">Currently viewing: 1</H1>
             <img id="waveform" src="pic/1.svg" alt="Italian Trulli">
 
         </div>
         
-        <br><br><br>
+        
+        <br><br>
+
 
         <div>    
+            
             Room
             <audio id="audio1" controls> 
                 <source src="preview_array/1.wav" type="audio/mpeg"> 
@@ -90,6 +109,7 @@
             <audio id="audio2" controls> 
                 <source src="preview_headset/1.wav" type="audio/mpeg"> 
             </audio>
+
         </div>
 
        
@@ -104,9 +124,63 @@
             <button id="next" class="buttonsmall" onclick="prev()" type="button" style="width:100px;height:60px;">Prev</button>
             <!-- <button id="play" class="buttonsmall" onclick="playAudio()" type="button">Play</button> -->
             <button id="next" class="buttonsmall" onclick="next()" type="button" style="width:100px;height:60px;">Next</button>
+
+
+           
+        <div>
+            <h1>Table of annotations</h1>
+
+            Table below contains previews of all files and can be toggled between coug and non-cough examples.
+
+            <br>
+
+            <SELECT id="options" onchange="toggleOption(this)">
+                <OPTION value="cough">Toggle coughs</OPTION>
+                <OPTION value="noncough">Toggle noncough</OPTION>
+            </SELECT>
+        </div>
             
 
         <script type="text/javascript">
+            
+            function toggleOption(thisselect) {
+                var selected = thisselect.options[thisselect.selectedIndex].value;
+                toggleRow(selected);
+            }
+
+            function toggleRow(id) {
+                // var row = document.getElementById(id);
+                var row = document.getElementsByClassName(id);
+
+                for (var i = 0, len =row.length; i < len; i++){
+                    if (row[i].style.display == '') {
+                        row[i].style.display = 'none';
+                    }
+                    else {
+                        row[i].style.display = '';
+                    }
+                }
+            }
+
+            function showRow(id) {
+                var row = document.getElementById(id);
+                row.style.display = '';
+            }
+
+            function hideRow(id) {
+                var row = document.getElementsByClassName(id);
+                for(var i = 0, len = row.length; i < len;i++){
+                    console.log(row[i])
+                    row[i].style.display = 'none';
+                }
+
+                
+            }
+
+            function hideAll() {
+                hideRow("cough");
+                hideRow("noncough");
+            }
 
             function eventJump() {
                 var x = document.getElementById("myText").value;
@@ -154,7 +228,7 @@
                 // document.getElementById("play").style.backgroundColor = "lightgray";
 
                 // Edit title
-                document.getElementById("header1").innerHTML = num;
+                document.getElementById("header1").innerHTML = "Currently viewing: "+num;
 
 
             }
@@ -173,7 +247,7 @@
                 // document.getElementById("play").style.backgroundColor = "lightgray";
 
                 // Edit title
-                document.getElementById("header1").innerHTML = num;
+                document.getElementById("header1").innerHTML = "Currently viewing: "+num;
 
             }
 
@@ -189,7 +263,7 @@
                 
 
                 // Edit title
-                document.getElementById("header1").innerHTML = num;
+                document.getElementById("header1").innerHTML = "Currently viewing: "+num;
             }
 
             
