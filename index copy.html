@@ -125,7 +125,6 @@
             <!-- <button id="play" class="buttonsmall" onclick="playAudio()" type="button">Play</button> -->
             <button id="next" class="buttonsmall" onclick="next()" type="button" style="width:100px;height:60px;">Next</button>
 
-
            
         <div>
             <h1>Table of annotations</h1>
@@ -135,17 +134,26 @@
             <br>
 
             <SELECT id="options" onchange="toggleOption(this)">
+                <OPTION value="">Remove all</OPTION>
                 <OPTION value="cough">Toggle coughs</OPTION>
                 <OPTION value="noncough">Toggle noncough</OPTION>
             </SELECT>
         </div>
-            
+
 
         <script type="text/javascript">
             
             function toggleOption(thisselect) {
                 var selected = thisselect.options[thisselect.selectedIndex].value;
-                toggleRow(selected);
+                if(selected==""){
+                    hideAll();
+
+                }
+                else{
+                    toggleRow(selected);
+
+                }
+                
             }
 
             function toggleRow(id) {

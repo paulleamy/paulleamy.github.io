@@ -35,10 +35,14 @@
             border: 1px solid black;
         }
 
-        thead, tbody { display: block; }
+        thead{
+            display: block;
+
+        }
 
         tbody {
-            height: 1000px;       /* Just for the demo          */
+            display: block;
+            height: 500px;       /* Just for the demo          */
             overflow-y: auto;    /* Trigger vertical scroll    */
             overflow-x: hidden;  /* Hide the horizontal scroll */
         }
@@ -125,7 +129,6 @@
             <!-- <button id="play" class="buttonsmall" onclick="playAudio()" type="button">Play</button> -->
             <button id="next" class="buttonsmall" onclick="next()" type="button" style="width:100px;height:60px;">Next</button>
 
-
            
         <div>
             <h1>Table of annotations</h1>
@@ -135,16 +138,17 @@
             <br>
 
             <SELECT id="options" onchange="toggleOption(this)">
+                <OPTION value="">Remove all</OPTION>
                 <OPTION value="cough">Toggle coughs</OPTION>
                 <OPTION value="noncough">Toggle noncough</OPTION>
             </SELECT>
         </div>
-            
+
+<div>
 <table style="width:100%">
 <thead>
-<tr>
-<th>File Number</th><th>Meeting ID</th><th>Start time</th><th>End time</th><th>Cough (1/0)</th><th>Volume</th><th>Type</th><th>Audio preview (Room mic)</th>
-</tr>
+<tr><th>File Number</th><th>Meeting ID</th><th>Start time</th><th>End time</th><th>Cough (1/0)</th><th>Volume</th><th>Type</th><th>Audio preview (Room mic)</th>
+<th>Waveform and magnitdue spectrogram</th></tr>
 </thead>
 <tbody>
 <tr class="noncough"><td>1</td><td>EN2001a</td><td>3099.54</td><td>3099.97</td><td>0</td><td>loud</td><td>click</td><td><audio id="audio1" controls><source src="preview_array/1.wav" type="audio/mpeg"></audio></td><td><img id="waveform" src="pic/1.svg" alt="Italian Trulli"></td></tr>
@@ -1519,6 +1523,7 @@
 </tbody>
 </table>
 
+</div>
 
 
 
@@ -1526,7 +1531,15 @@
             
             function toggleOption(thisselect) {
                 var selected = thisselect.options[thisselect.selectedIndex].value;
-                toggleRow(selected);
+                if(selected==""){
+                    hideAll();
+
+                }
+                else{
+                    toggleRow(selected);
+
+                }
+                
             }
 
             function toggleRow(id) {
