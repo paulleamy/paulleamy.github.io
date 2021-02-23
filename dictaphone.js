@@ -58,13 +58,10 @@ if (navigator.mediaDevices.getUserMedia) {
       const clipContainer = document.createElement('article');
       const clipLabel = document.createElement('p');
       const audio = document.createElement('audio');
-      const deleteButton = document.createElement('button');
-
+      
       clipContainer.classList.add('clip');
       audio.setAttribute('controls', '');
-      deleteButton.textContent = 'Delete';
-      deleteButton.className = 'delete';
-
+      
       if(clipName === null) {
         clipLabel.textContent = 'My unnamed clip';
       } else {
@@ -73,7 +70,6 @@ if (navigator.mediaDevices.getUserMedia) {
 
       clipContainer.appendChild(audio);
       clipContainer.appendChild(clipLabel);
-      clipContainer.appendChild(deleteButton);
       soundClips.appendChild(clipContainer);
 
       audio.controls = true;
