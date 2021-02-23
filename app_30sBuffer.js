@@ -65,17 +65,17 @@ if (navigator.mediaDevices.getUserMedia) {
       const clipContainer = document.createElement('article');
       const clipLabel = document.createElement('p');
       const audio = document.createElement('audio');
-      const deleteButton = document.createElement('button');
+//       const deleteButton = document.createElement('button');
 
       // Could be useful to add in an upload button here!
-      const uploadButton = document.createElement('button');
-      uploadButton.textContent = 'Upload';
-      uploadButton.className = 'upload';
+//       const uploadButton = document.createElement('button');
+//       uploadButton.textContent = 'Upload';
+//       uploadButton.className = 'upload';
 
       clipContainer.classList.add('clip');
       audio.setAttribute('controls', '');
-      deleteButton.textContent = 'Delete';
-      deleteButton.className = 'delete';
+//       deleteButton.textContent = 'Delete';
+//       deleteButton.className = 'delete';
 
       
       if(clipName === null) {
@@ -86,8 +86,8 @@ if (navigator.mediaDevices.getUserMedia) {
 
       clipContainer.appendChild(audio);
       clipContainer.appendChild(clipLabel);
-      clipContainer.appendChild(deleteButton);
-      clipContainer.appendChild(uploadButton);
+//       clipContainer.appendChild(deleteButton);
+//       clipContainer.appendChild(uploadButton);
       // soundClips.appendChild(clipContainer);
 
       // Handy blob URL - https://developer.mozilla.org/en-US/docs/Web/API/Blob/size
@@ -116,21 +116,21 @@ if (navigator.mediaDevices.getUserMedia) {
       // Possible to upload to server?
       // https://developers.google.com/web/updates/2016/01/mediarecorder
       
-      deleteButton.onclick = function(e) {
-        let evtTgt = e.target;
-        evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
-      }
+//       deleteButton.onclick = function(e) {
+//         let evtTgt = e.target;
+//         evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
+//       }
 
-      uploadButton.onclick = function(e) {
-        let evtTgt = e.target;
+//       uploadButton.onclick = function(e) {
+//         let evtTgt = e.target;
         
-        // Function for uploaing to server - I am lost here
-        sendAudioFile(blob);
+//         // Function for uploaing to server - I am lost here
+//         sendAudioFile(blob);
 
-        // Remove clip after uploading
-        evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
+//         // Remove clip after uploading
+//         evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
         
-      }
+//       }
 
       clipLabel.onclick = function() {
         const existingName = clipLabel.textContent;
