@@ -21,9 +21,9 @@ if (navigator.mediaDevices.getUserMedia) {
   console.log('getUserMedia supported.');
 
   const constraints = {
-    audio: true, 
-    audioBitsPerSecond: 705600,
-    mimeType: 'audio/webm' 
+    audio: true
+//     audioBitsPerSecond: 705600,
+//     mimeType: 'audio/webm' 
   };
   
   let chunks = [];
