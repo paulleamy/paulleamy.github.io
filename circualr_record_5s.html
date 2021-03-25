@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <!-- <title>Cough capture tool</title> -->
+    <title>Cough C_appture</title>
+    <link href="app.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <div class="wrapper">
+        
+        <header>
+            <h1>Cough cappture</h1>    
+        </header>
+        
+        <div id="buttons">
+			<button class="record" id="startRecordingButton">Start recording</button>
+            <button class="stop" id="stopRecordingButton">Stop recording</button>
+        </div>
+
+        <section class="sound-clips">
+
+
+        </section>
+ 
+
+    </div>
+
+    <script>
+
+        // Adapted from
+        // https://gist.github.com/meziantou/edb7217fddfbb70e899e
+
+        var startRecordingButton = document.getElementById("startRecordingButton");
+        var stopRecordingButton = document.getElementById("stopRecordingButton");
+        var playButton = document.getElementById("playButton");
+
+        // My additional bits
+        // set up basic variables for app
+        const soundClips = document.querySelector('.sound-clips');
+
+        // Back to their bits
+        var leftchannel = [];
+        var rightchannel = [];
+        var recorder = null;
+        var recordingLength = 0;
+        var volume = null;
+        var mediaStream = null;
+        var sampleRate = 44100;
+        var context = null;
+        var blob = null;
+
+        var downloadName = [];
+
+        startRecordingButton.addEventListener("click", function () {
+
+            console.log("recorder started");
+            startRecordingButton.style.background = "red";
+            stopRecordingButton.disabled = false;
+            startRecordingButton.disabled = true;
+
+            // Reset buffer variables every recording 
+            leftchannel = [];
+            rightchannel = [];
+            recordingLength = 0;
+            
+            // Initialize recorder
+            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+            navigator.getUserMedia(
+            {
+                audio: true
+            },
+            function (e) {
+                console.log("user consent");
+
+                // creates the audio context
+                window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                context = new AudioContext();
+
+                // creates an audio node from the microphone incoming stream
+                mediaStream = context.createMediaStreamSource(e);
+                
+                // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createScriptProcessor
+                // bufferSize: the onaudioprocess event is called when the buffer is full
+                var bufferSize = 2048;
+                var numberOfInputChannels = 2;
+                var numberOfOutputChannels = 2;
+                if (context.createScriptProcessor) {
+                    console.log('This one');
+                    recorder = context.createScriptProcessor(bufferSize, numberOfInputChannels, numberOfOutputChannels);
+                } else {
+                    recorder = context.createJavaScriptNode(bufferSize, numberOfInputChannels, numberOfOutputChannels);
+                }
+
+
+                recorder.onaudioprocess = function (audioProcessingEvent) {
+                    leftchannel.push(new Float32Array(audioProcessingEvent.inputBuffer.getChannelData(0)));
+                    rightchannel.push(new Float32Array(audioProcessingEvent.inputBuffer.getChannelData(1)));
+                    recordingLength += bufferSize;
+
+                    // Print current recording length
+                    console.log(recordingLength/sampleRate);
+
+                    // Limits the reocrding length
+                    if (recordingLength/sampleRate > 5) {
+                    	
+                    	console.log('Recording too long...');
+                    	
+                    	// Use shift to remove the earliest buffer from both channels
+                    	leftchannel.shift();
+                    	rightchannel.shift();
+
+                    	recordingLength -= bufferSize;
+
+                    }
+
+                }
+
+                // we connect the recorder
+                mediaStream.connect(recorder);
+                recorder.connect(context.destination);
+            },
+                    	function (e) {
+                            console.error(e);
+                        });
+            
+        });
+
+        stopRecordingButton.addEventListener("click", function () {
+
+            console.log("recorder stopped");
+            startRecordingButton.style.background = "";
+            startRecordingButton.style.color = "";
+            stopRecordingButton.disabled = true;
+            startRecordingButton.disabled = false
+
+            // stop recording
+            recorder.disconnect(context.destination);
+            mediaStream.disconnect(recorder);
+
+            // we flat the left and right channels down
+            // Float32Array[] => Float32Array
+            var leftBuffer = flattenArray(leftchannel, recordingLength);
+            var rightBuffer = flattenArray(rightchannel, recordingLength);
+            // we interleave both channels together
+            // [left[0],right[0],left[1],right[1],...]
+            var interleaved = interleave(leftBuffer, rightBuffer);
+
+            // we create our wav file
+            var buffer = new ArrayBuffer(44 + interleaved.length * 2);
+            var view = new DataView(buffer);
+
+            // RIFF chunk descriptor
+            writeUTFBytes(view, 0, 'RIFF');
+            view.setUint32(4, 44 + interleaved.length * 2, true);
+            writeUTFBytes(view, 8, 'WAVE');
+            // FMT sub-chunk
+            writeUTFBytes(view, 12, 'fmt ');
+            view.setUint32(16, 16, true); // chunkSize
+            view.setUint16(20, 1, true); // wFormatTag
+            view.setUint16(22, 2, true); // wChannels: stereo (2 channels)
+            view.setUint32(24, sampleRate, true); // dwSamplesPerSec
+            view.setUint32(28, sampleRate * 4, true); // dwAvgBytesPerSec
+            view.setUint16(32, 4, true); // wBlockAlign
+            view.setUint16(34, 16, true); // wBitsPerSample
+            // data sub-chunk
+            writeUTFBytes(view, 36, 'data');
+            view.setUint32(40, interleaved.length * 2, true);
+
+            // write the PCM samples
+            var index = 44;
+            var volume = 1;
+            for (var i = 0; i < interleaved.length; i++) {
+                view.setInt16(index, interleaved[i] * (0x7FFF * volume), true);
+                index += 2;
+            }
+
+            // our final blob
+            blob = new Blob([view], { type: 'audio/wav' });
+
+            // Ask for name
+            const clipName = prompt('Enter a name for your sound clip?','...example name!');
+
+            // Add audio element
+            const clipContainer = document.createElement('article');
+            const clipLabel = document.createElement('p');
+            const audio = document.createElement('audio');
+      
+            clipContainer.classList.add('clip');
+            audio.setAttribute('controls', '');
+            audio.controls = true;
+
+            if(clipName === null) {
+                clipLabel.textContent = 'My unnamed clip';
+            } else {
+                clipLabel.textContent = clipName;
+            }
+
+            downloadName=clipName;
+
+            clipContainer.appendChild(audio);
+            clipContainer.appendChild(clipLabel);
+            //soundClips.appendChild(clipContainer);
+            const audioURL = window.URL.createObjectURL(blob);
+            audio.src = audioURL;
+
+
+            // Add a download button - done
+         	const anchor = document.createElement('a');
+     		anchor.href = audioURL;
+     		anchor.download =  downloadName+'.wav';
+ 		 	anchor.innerText = 'Download';
+     		clipContainer.appendChild(anchor);
+
+
+     		// Create up laod button to send to server
+     		const uploadButton = document.createElement('button');
+            uploadButton.textContent = 'Upload to server';
+      		uploadButton.className = 'upload';
+      		uploadButton.style.background = "blue";
+      		uploadButton.style.color = "black";
+      		clipContainer.appendChild(uploadButton);
+
+      		uploadButton.onclick = function(e) {
+        		// let evtTgt = e.target;
+       			// evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
+       			
+       			// Use socket io to upload to server
+
+      		}
+
+     		// DOes this have to happen after all the new parts are created?
+     		soundClips.appendChild(clipContainer);
+            
+
+        });
+
+        function flattenArray(channelBuffer, recordingLength) {
+            var result = new Float32Array(recordingLength);
+            var offset = 0;
+            for (var i = 0; i < channelBuffer.length; i++) {
+                var buffer = channelBuffer[i];
+                result.set(buffer, offset);
+                offset += buffer.length;
+            }
+            return result;
+        }
+
+        function interleave(leftChannel, rightChannel) {
+            var length = leftChannel.length + rightChannel.length;
+            var result = new Float32Array(length);
+
+            var inputIndex = 0;
+
+            for (var index = 0; index < length;) {
+                result[index++] = leftChannel[inputIndex];
+                result[index++] = rightChannel[inputIndex];
+                inputIndex++;
+            }
+            return result;
+        }
+
+        function writeUTFBytes(view, offset, string) {
+            for (var i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+    </script>
+</body>
+</html>
