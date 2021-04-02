@@ -99,6 +99,14 @@
                     leftchannel.push(new Float32Array(e.inputBuffer.getChannelData(0)));
                     rightchannel.push(new Float32Array(e.inputBuffer.getChannelData(1)));
                     recordingLength += bufferSize;
+                    console.log(recordingLength/sampleRate);
+                    if(recordingLength/sampleRate > 5){
+                        console.log('Recording too long...')
+                        leftchannel.shift();
+                        rightchannel.shift();
+                        recordingLength -= bufferSize;
+                        console.log(recordingLength/sampleRate);
+                    }
                 }
 
                 // we connect the recorder
